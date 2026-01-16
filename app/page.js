@@ -67,7 +67,7 @@ function Scene() {
       <pointLight position={[10, 10, 10]} intensity={1.5} color="#d946ef" />
       <pointLight position={[-10, -10, -10]} intensity={0.5} color="#a855f7" />
       <Sparkles 
-        count={250}
+        count={100}
         scale={12}
         size={6}
         speed={1}
