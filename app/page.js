@@ -17,7 +17,7 @@ import {
   Instagram,
   ChevronDown
 } from 'lucide-react';
-
+import { LiquidGlass } from '@liquidglass/react';
 // --- 3D Components ---
 
 function Brain() {
@@ -40,7 +40,7 @@ function Brain() {
         {/* p=3, q=4 creates a dense, knotted structure resembling brain folds */}
         <meshStandardMaterial 
           color="#1a0b2e" 
-          roughness={0.9} 
+          roughness={0.5} 
           metalness={1.0} 
         />
       </mesh>
@@ -49,10 +49,10 @@ function Brain() {
         <torusKnotGeometry args={[9.52, 9.6, 500, 30, 11, 9]} />
         <meshStandardMaterial 
           wireframe 
-          color="#8400ff" 
-          emissive="#785d7d"
+          color="#9f38ff" 
+          emissive="#bb00d7"
           emissiveIntensity={1.5}
-          transparent
+          
           opacity={0.4}
         />
       </mesh>
@@ -67,9 +67,9 @@ function Scene() {
       <pointLight position={[10, 10, 10]} intensity={1.5} color="#d946ef" />
       <pointLight position={[-10, -10, -10]} intensity={0.5} color="#a855f7" />
       <Sparkles 
-        count={250}
+        count={100}
         scale={12}
-        size={6}
+        size={16}
         speed={1}
         opacity={1}
         color="#f5ff64"
@@ -89,6 +89,42 @@ function Scene() {
       
       {/* Disable zoom to keep layout stable */}
       <OrbitControls enableZoom={false} enablePan={false} autoRotate={false} />
+    </>
+  );
+}
+
+// Simple Typewriter component that accepts an array of tokens
+function Typewriter({ tokens, speed = 20 }) {
+  const [count, setCount] = React.useState(0);
+  const total = React.useMemo(() => tokens.reduce((s, t) => s + t.text.length, 0), [tokens]);
+
+  React.useEffect(() => {
+    if (count >= total) return;
+    const id = setInterval(() => {
+      setCount(c => Math.min(total, c + 1));
+    }, speed);
+    return () => clearInterval(id);
+  }, [count, total, speed]);
+
+  // Render tokens up to `count` characters
+  let remaining = count;
+  const rendered = tokens.map((token, i) => {
+    if (remaining <= 0) return React.createElement(React.Fragment, { key: i }, '');
+    const take = Math.min(token.text.length, remaining);
+    remaining -= take;
+    const text = token.text.slice(0, take);
+    return token.className ? (
+      React.createElement('span', { key: i, className: token.className }, text)
+    ) : (
+      React.createElement(React.Fragment, { key: i }, text)
+    );
+  });
+
+  return (
+    <>
+      {rendered}
+      {/* caret */}
+      {count < total ? <span className="text-purple-500 ml-1 animate-pulse">|</span> : null}
     </>
   );
 }
@@ -136,6 +172,36 @@ export default function InitHackathon() {
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
   };
+
+  // Tokens for the code snippet (preserve syntax highlighting classes)
+  const codeTokens = [
+    { text: "const ", className: "text-fuchsia-400" },
+    { text: "initHackathon", className: "text-blue-400" },
+    { text: " = ", className: null },
+    { text: "async", className: "text-yellow-300" },
+    { text: " () => {\n  ", className: null },
+    { text: "await", className: "text-fuchsia-400" },
+    { text: " ", className: null },
+    { text: "learn", className: "text-blue-400" },
+    { text: "(", className: null },
+    { text: "'Full Stack'", className: "text-purple-400" },
+    { text: ");\n  ", className: null },
+    { text: "await", className: "text-fuchsia-400" },
+    { text: " ", className: null },
+    { text: "build", className: "text-blue-400" },
+    { text: "(", className: null },
+    { text: "'MVP'", className: "text-purple-400" },
+    { text: ");\n  ", className: null },
+    { text: "await", className: "text-fuchsia-400" },
+    { text: " ", className: null },
+    { text: "deploy", className: "text-blue-400" },
+    { text: "();\n\n  ", className: null },
+    { text: "// Returns: A new career path\n  ", className: "text-gray-500" },
+    { text: "return", className: "text-fuchsia-400" },
+    { text: " ", className: null },
+    { text: '"Builder"', className: "text-purple-400" },
+    { text: ";\n}", className: null }
+  ];
 
   return (
     <div className="bg-transparent text-white min-h-screen font-sans selection:bg-purple-500 selection:text-white overflow-x-hidden relative z-[1]">
@@ -351,12 +417,22 @@ export default function InitHackathon() {
               <MapPin className="w-4 h-4 text-purple-500" /> Kasturba Hall
             </div>
           </div>
-
-          <div className="mt-12">
-            <a href="#" className="inline-flex items-center gap-2 px-8 py-4 rounded text-lg font-bold tracking-widest border border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-white hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all duration-300 group bg-black/20 backdrop-blur-sm">
+         
+          <div className="mt-12 ">
+            <LiquidGlass
+                        borderRadius={8}
+                        blur={1}
+                        contrast={1.5}
+                        brightness={1.8}
+                        saturation={1.2}
+                        displacementScale={3}
+                        elasticity={0.7}
+                        className='w-[20vw] py-4 bg-black/20'
+                      >
+            <a href="#" className="inline-flex items-center gap-2  rounded text-lg font-bold tracking-widest text-purple-500  transition-all duration-300 group ">
               INITIALIZE SYSTEM
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </a>
+            </a></LiquidGlass>
           </div>
         </div>
         
@@ -395,16 +471,9 @@ export default function InitHackathon() {
             <div className="relative reveal delay-200 animate-float mt-8 md:mt-0">
               <div className="absolute inset-0 bg-purple-500 blur-3xl opacity-20 rounded-full"></div>
               <div className="relative bg-gray-900 border border-white/10 p-6 md:p-8 rounded-xl shadow-2xl overflow-hidden">
-                <pre className="font-mono text-xs md:text-sm text-gray-300 overflow-x-auto whitespace-pre-wrap">
-                  <span className="text-fuchsia-400">const</span> <span className="text-blue-400">initHackathon</span> = <span className="text-yellow-300">async</span> () ={'>'} {'{'}{'\n'}
-                  {'  '}<span className="text-fuchsia-400">await</span> <span className="text-blue-400">learn</span>(<span className="text-purple-400">'Full Stack'</span>);{'\n'}
-                  {'  '}<span className="text-fuchsia-400">await</span> <span className="text-blue-400">build</span>(<span className="text-purple-400">'MVP'</span>);{'\n'}
-                  {'  '}<span className="text-fuchsia-400">await</span> <span className="text-blue-400">deploy</span>();{'\n'}
-                  {'\n'}
-                  {'  '}<span className="text-gray-500">// Returns: A new career path</span>{'\n'}
-                  {'  '}<span className="text-fuchsia-400">return</span> <span className="text-purple-400">"Builder"</span>;{'\n'}
-                  {'}'};
-                </pre>
+                    <pre className="font-mono text-xs md:text-sm text-gray-300 overflow-x-auto whitespace-pre-wrap">
+                      <Typewriter tokens={codeTokens} speed={18} />
+                    </pre>
               </div>
             </div>
           </div>
